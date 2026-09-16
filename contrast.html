@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ابزار تضاد رنگ | WCAG</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* دکمه برگشت */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.4);
+            padding: 10px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .card {
+            max-width: 950px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            z-index: 10;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.9), rgba(0, 200, 255, 0.8));
+            padding: 28px 32px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 28px 28px 32px;
+        }
+
+        .color-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
+            padding: 24px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .dual-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            margin-bottom: 20px;
+            justify-content: space-between;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .input-group label span {
+            font-family: monospace;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .hex-input {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .hex-input input[type="color"] {
+            width: 56px;
+            height: 48px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            cursor: pointer;
+            background: transparent;
+            padding: 4px;
+        }
+
+        .hex-input input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            font-family: monospace;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            transition: 0.3s;
+            direction: ltr;
+            min-width: 100px;
+        }
+
+        .hex-input input[type="text"]:focus {
+            outline: none;
+            border-color: rgba(0, 200, 255, 0.4);
+            box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1);
+        }
+
+        .preview-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .preview-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .info-bar {
+            font-size: 0.75rem;
+            background: rgba(0, 200, 255, 0.05);
+            padding: 10px 16px;
+            border-radius: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 200, 255, 0.05);
+        }
+
+        .info-bar strong {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 24px;
+            padding: 20px 24px 24px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .result-label {
+            text-align: center;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        .contrast-ratio {
+            font-size: 3.5rem;
+            font-weight: 800;
+            font-family: monospace;
+            text-align: center;
+            margin: 8px 0 12px;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #00ffc8, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 12px 0 4px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 16px;
+            border-radius: 48px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .badge.pass {
+            background: rgba(0, 255, 200, 0.08);
+            color: #00ffc8;
+            border-color: rgba(0, 255, 200, 0.15);
+        }
+
+        .badge.fail {
+            background: rgba(255, 107, 107, 0.08);
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.15);
+        }
+
+        .sample-box {
+            background: var(--bg-color, #1a1a3e);
+            color: var(--text-color, #ffffff);
+            padding: 28px 24px;
+            border-radius: 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 10px;
+        }
+
+        .sample-box .sample-label {
+            font-size: 0.7rem;
+            opacity: 0.4;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .large-text {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .small-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .swap-section {
+            margin-top: 24px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 24px;
+            padding: 16px 20px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .swap-header span {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .swap-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .swap-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .swapped-preview {
+            padding: 24px 20px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .swapped-preview .swapped-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .swapped-preview .swapped-sub {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .swapped-ratio {
+            margin-top: 12px;
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .swapped-ratio.good { color: #00ffc8; }
+        .swapped-ratio.warn { color: #ffd93d; }
+        .swapped-ratio.bad { color: #ff6b6b; }
+
+        .footnote {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.2);
+            text-align: center;
+            margin-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 620px) {
+            .dual-input { flex-direction: column; gap: 20px; }
+            .contrast-ratio { font-size: 2.8rem; }
+            .header h1 { font-size: 1.5rem; }
+            .content { padding: 20px; }
+            .large-text { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← برگشت</a>
+
+    <div class="card">
+        <div class="header">
+            <h1>🎨 ابزار تضاد رنگ</h1>
+            <p>طبق استانداردهای WCAG 2.1 — محاسبه خودکار نسبت کنتراست</p>
+        </div>
+        <div class="content">
+
+            <div class="color-panel">
+                <div class="dual-input">
+                    <div class="input-group">
+                        <label>🖌️ پس‌زمینه <span>BG</span></label>
+                        <div class="hex-input">
+                            <input type="color" id="bgPicker" value="#1a1a3e">
+                            <input type="text" id="bgHex" placeholder="#RRGGBB" value="#1A1A3E">
+                        </div>
+                        <div class="preview-row">
+                            <div class="color-preview" id="bgPreview" style="background:#1a1a3e;"></div>
+                            <span class="preview-label">روشنایی نسبی محاسبه می‌شود</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>✏️ رنگ متن <span>FG</span></label>
+                        <div class="hex-input">
+                            <input type="color" id="textPicker" value="#ffffff">
+                            <input type="text" id="textHex" placeholder="#RRGGBB" value="#FFFFFF">
+                        </div>
+                        <div class="preview-row">
+                            <div class="color-preview" id="textPreview" style="background:#ffffff;"></div>
+                            <span class="preview-label">رنگ نوشته</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-bar">
+                    💡 <strong>متن معمولی</strong> ≥ 4.5:1 &nbsp;|&nbsp; <strong>متن درشت</strong> (≥24px) ≥ 3:1 &nbsp;|&nbsp; <strong>AAA</strong> ≥ 7:1
+                </div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-label">📐 نسبت کنتراست</div>
+                <div class="contrast-ratio" id="contrastValue">- : 1</div>
+                <div class="badge-group" id="badgeContainer">
+                    <div class="badge" id="aaNormal">AA معمولی</div>
+                    <div class="badge" id="aaLarge">AA درشت</div>
+                    <div class="badge" id="aaaNormal">AAA عالی</div>
+                    <div class="badge" id="aaaLarge">AAA درشت</div>
+                </div>
+            </div>
+
+            <div class="sample-box" id="liveSample" style="--bg-color:#1a1a3e; --text-color:#ffffff;">
+                <div class="sample-label">✨ نمونه زنده</div>
+                <div class="large-text">متن درشت نمونه</div>
+                <div class="small-text">
+                    این یک متن معمولی با سایز استاندارد است. نسبت کنتراست برای خوانایی و دسترسی اهمیت بالایی دارد.
+                </div>
+            </div>
+
+            <div class="swap-section">
+                <div class="swap-header">
+                    <span>🔄 حالت معکوس (جابجایی رنگ‌ها)</span>
+                    <button class="swap-btn" id="swapBtn">🔁 جابجا کن</button>
+                </div>
+                <div class="swapped-preview" id="swappedPreview">
+                    <div class="swapped-title">نمایش معکوس شده</div>
+                    <div class="swapped-sub">متن نمونه با نسبت کنتراست معکوس</div>
+                    <div class="swapped-ratio" id="swappedRatio">نسبت کنتراست: - : 1</div>
+                </div>
+            </div>
+
+            <div class="footnote">
+                ⚡ طبق اصول WCAG 2.1 | نسبت کنتراست با فرمول (L1+0.05)/(L2+0.05) محاسبه می‌شود
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hexToRgb(hex) {
+            let h = hex.trim();
+            if (h.startsWith('#')) h = h.slice(1);
+            if (h.length === 3) h = h.split('').map(c => c + c).join('');
+            if (h.length !== 6) return null;
+            const r = parseInt(h.substring(0, 2), 16);
+            const g = parseInt(h.substring(2, 4), 16);
+            const b = parseInt(h.substring(4, 6), 16);
+            if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+            return { r, g, b };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0').toUpperCase()).join('');
+        }
+
+        function linearize(c) {
+            const ch = c / 255;
+            return ch <= 0.03928 ? ch / 12.92 : Math.pow((ch + 0.055) / 1.055, 2.4);
+        }
+
+        function luminance(r, g, b) {
+            return 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b);
+        }
+
+        function contrastRatio(rgb1, rgb2) {
+            const L1 = luminance(rgb1.r, rgb1.g, rgb1.b);
+            const L2 = luminance(rgb2.r, rgb2.g, rgb2.b);
+            const lighter = Math.max(L1, L2);
+            const darker = Math.min(L1, L2);
+            return parseFloat(((lighter + 0.05) / (darker + 0.05)).toFixed(2));
+        }
+
+        const bgPicker = document.getElementById('bgPicker');
+        const textPicker = document.getElementById('textPicker');
+        const bgHex = document.getElementById('bgHex');
+        const textHex = document.getElementById('textHex');
+        const bgPreview = document.getElementById('bgPreview');
+        const textPreview = document.getElementById('textPreview');
+        const contrastValue = document.getElementById('contrastValue');
+        const liveSample = document.getElementById('liveSample');
+        const swappedPreview = document.getElementById('swappedPreview');
+        const swappedRatio = document.getElementById('swappedRatio');
+        const swapBtn = document.getElementById('swapBtn');
+
+        const aaNormal = document.getElementById('aaNormal');
+        const aaLarge = document.getElementById('aaLarge');
+        const aaaNormal = document.getElementById('aaaNormal');
+        const aaaLarge = document.getElementById('aaaLarge');
+
+        let bgRgb = { r: 26, g: 26, b: 62 };
+        let textRgb = { r: 255, g: 255, b: 255 };
+
+        function updateBadge(el, pass, passText, failText) {
+            el.textContent = pass ? passText : failText;
+            el.className = 'badge ' + (pass ? 'pass' : 'fail');
+        }
+
+        function updateAll() {
+            const ratio = contrastRatio(bgRgb, textRgb);
+            contrastValue.textContent = ratio + ' : 1';
+
+            const bgCss = `rgb(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b})`;
+            const textCss = `rgb(${textRgb.r}, ${textRgb.g}, ${textRgb.b})`;
+
+            liveSample.style.setProperty('--bg-color', bgCss);
+            liveSample.style.setProperty('--text-color', textCss);
+            liveSample.style.backgroundColor = bgCss;
+            liveSample.style.color = textCss;
+
+            bgPreview.style.background = bgCss;
+            textPreview.style.background = textCss;
+
+            updateBadge(aaNormal, ratio >= 4.5, 'AA معمولی ✅', 'AA معمولی ❌');
+            updateBadge(aaLarge, ratio >= 3.0, 'AA درشت ✅', 'AA درشت ❌');
+            updateBadge(aaaNormal, ratio >= 7.0, 'AAA عالی ✅', 'AAA عالی ❌');
+            updateBadge(aaaLarge, ratio >= 4.5, 'AAA درشت ✅', 'AAA درشت ❌');
+
+            updateSwapped();
+        }
+
+        function updateSwapped() {
+            const swappedBg = { ...textRgb };
+            const swappedText = { ...bgRgb };
+            const bgCss = `rgb(${swappedBg.r}, ${swappedBg.g}, ${swappedBg.b})`;
+            const textCss = `rgb(${swappedText.r}, ${swappedText.g}, ${swappedText.b})`;
+
+            swappedPreview.style.backgroundColor = bgCss;
+            swappedPreview.style.color = textCss;
+
+            const ratio = contrastRatio(swappedBg, swappedText);
+            swappedRatio.textContent = `نسبت کنتراست معکوس: ${ratio} : 1`;
+            swappedRatio.className = 'swapped-ratio ' + (ratio >= 4.5 ? 'good' : ratio >= 3.0 ? 'warn' : 'bad');
+        }
+
+        function swapColors() {
+            const newBg = { ...textRgb };
+            const newText = { ...bgRgb };
+            bgRgb = newBg;
+            textRgb = newText;
+
+            const bgHexVal = rgbToHex(bgRgb.r, bgRgb.g, bgRgb.b);
+            const textHexVal = rgbToHex(textRgb.r, textRgb.g, textRgb.b);
+
+            bgPicker.value = bgHexVal;
+            bgHex.value = bgHexVal;
+            textPicker.value = textHexVal;
+            textHex.value = textHexVal;
+
+            updateAll();
+        }
+
+        bgPicker.addEventListener('input', function() {
+            const rgb = hexToRgb(this.value);
+            if (rgb) { bgRgb = rgb; bgHex.value = this.value.toUpperCase(); updateAll(); }
+        });
+
+        textPicker.addEventListener('input', function() {
+            const rgb = hexToRgb(this.value);
+            if (rgb) { textRgb = rgb; textHex.value = this.value.toUpperCase(); updateAll(); }
+        });
+
+        bgHex.addEventListener('change', function() {
+            let val = this.value;
+            if (!val.startsWith('#')) val = '#' + val;
+            const rgb = hexToRgb(val);
+            if (rgb) { bgRgb = rgb; bgPicker.value = val.toUpperCase(); this.value = val.toUpperCase(); updateAll(); }
+            else { this.value = rgbToHex(bgRgb.r, bgRgb.g, bgRgb.b); }
+        });
+
+        textHex.addEventListener('change', function() {
+            let val = this.value;
+            if (!val.startsWith('#')) val = '#' + val;
+            const rgb = hexToRgb(val);
+            if (rgb) { textRgb = rgb; textPicker.value = val.toUpperCase(); this.value = val.toUpperCase(); updateAll(); }
+            else { this.value = rgbToHex(textRgb.r, textRgb.g, textRgb.b); }
+        });
+
+        swapBtn.addEventListener('click', swapColors);
+
+        updateAll();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پالت ۱۰۰ رنگ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a1a, #1a1a3e, #0d0d2b);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.4);
+            padding: 10px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .card {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            z-index: 10;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d, #00ffc8, #4d96ff, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.85rem;
+        }
+
+        .header .count {
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+
+        /* جستجو و فیلتر */
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-row input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 0.95rem;
+            min-width: 150px;
+        }
+
+        .search-row input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-row input:focus {
+            outline: none;
+            border-color: rgba(0, 200, 255, 0.2);
+        }
+
+        .search-row select {
+            padding: 12px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .search-row select option {
+            background: #1a1a3e;
+            color: white;
+        }
+
+        /* رنگ‌ها */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 6px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .color-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .color-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+        }
+
+        .color-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 2px solid transparent;
+            position: relative;
+            min-height: 65px;
+        }
+
+        .color-item:hover {
+            transform: scale(1.05);
+            z-index: 2;
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .color-item .num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            opacity: 0.8;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .color-item .name {
+            font-size: 0.45rem;
+            opacity: 0.5;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            line-height: 1.2;
+            max-width: 90%;
+        }
+
+        .color-item .hex-code {
+            font-size: 0.4rem;
+            opacity: 0.3;
+            font-family: monospace;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .color-item .copy-badge {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 0.35rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .color-item:hover .copy-badge {
+            opacity: 0.6;
+        }
+
+        /* انتخاب شده */
+        .color-item.selected {
+            border-color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        /* نمایش رنگ انتخاب شده */
+        .selected-display {
+            margin-top: 20px;
+            padding: 16px 20px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .selected-display .preview {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+
+        .selected-display .info {
+            flex: 1;
+        }
+
+        .selected-display .info .number {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+        }
+
+        .selected-display .info .name {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .selected-display .info .hex {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+
+        .selected-display .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .selected-display .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .selected-display .copy-btn.copied {
+            background: rgba(0, 255, 200, 0.08);
+            color: #00ffc8;
+            border-color: rgba(0, 255, 200, 0.1);
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.03);
+            font-size: 0.6rem;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        @media (max-width: 550px) {
+            .color-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+            .color-item { min-height: 50px; }
+            .color-item .name { display: none; }
+            .selected-display { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← برگشت</a>
+
+    <div class="card">
+        <div class="header">
+            <h1>🌈 پالت ۱۰۰ رنگ</h1>
+            <p>۱۰۰ رنگ مختلف با نام و کد هگز — برای انتخاب و کپی</p>
+            <div class="count">۱۰۰ رنگ · روی هرکدوم کلیک کن</div>
+        </div>
+
+        <!-- جستجو -->
+        <div class="search-row">
+            <input type="text" id="searchInput" placeholder="جستجوی نام رنگ...">
+            <select id="filterSelect">
+                <option value="all">همه رنگ‌ها</option>
+                <option value="red">قرمز</option>
+                <option value="orange">نارنجی</option>
+                <option value="yellow">زرد</option>
+                <option value="green">سبز</option>
+                <option value="blue">آبی</option>
+                <option value="purple">بنفش</option>
+                <option value="pink">صورتی</option>
+                <option value="brown">قهوه‌ای</option>
+                <option value="gray">خاکستری</option>
+                <option value="white">سفید</option>
+            </select>
+        </div>
+
+        <!-- گرید رنگ‌ها -->
+        <div class="color-grid" id="colorGrid"></div>
+
+        <!-- نمایش انتخاب شده -->
+        <div class="selected-display" id="selectedDisplay">
+            <div class="preview" id="selectedPreview" style="background:#ff6b6b;"></div>
+            <div class="info">
+                <div class="number" id="selectedNumber">#۱</div>
+                <div class="name" id="selectedName">قرمز</div>
+                <div class="hex" id="selectedHex">#FF6B6B</div>
+            </div>
+            <button class="copy-btn" id="copyBtn">📋 کپی هگز</button>
+        </div>
+
+        <div class="footer">۱۰۰ رنگ · برای کپی روی رنگ کلیک کن</div>
+    </div>
+
+    <script>
+        // ====== تولید ۱۰۰ رنگ ======
+        function generateColors() {
+            const colors = [];
+            const names = [
+                'قرمز', 'نارنجی', 'زرد', 'سبز', 'آبی', 'بنفش', 'صورتی', 'قهوه‌ای', 'خاکستری', 'سفید',
+                'فیروزه‌ای', 'نیلی', 'مسی', 'طلایی', 'نقره‌ای', 'مرواریدی', 'یاسی', 'ارغوانی', 'سرمه‌ای', 'زیتونی',
+                'اناری', 'مرجانی', 'عنابی', 'خاکی', 'کرم', 'نخودی', 'مغزی', 'چوبی', 'سفالی', 'شتری',
+                'سبزآبی', 'آبی‌آسمانی', 'بنفش‌آبی', 'صورتی‌تند', 'قهوه‌ای‌روشن', 'خاکستری‌تیره', 'سفید‌شیری', 'زرد‌لیمویی', 'سبز‌زمردی', 'آبی‌سلطنتی'
+            ];
+
+            // الگوهای رنگ
+            const patterns = [
+                { h: 0, s: 0.8, l: 0.5 },     // قرمز
+                { h: 15, s: 0.8, l: 0.5 },    // نارنجی
+                { h: 45, s: 0.8, l: 0.5 },    // زرد
+                { h: 120, s: 0.7, l: 0.4 },   // سبز
+                { h: 210, s: 0.7, l: 0.5 },   // آبی
+                { h: 270, s: 0.7, l: 0.5 },   // بنفش
+                { h: 330, s: 0.7, l: 0.6 },   // صورتی
+                { h: 30, s: 0.6, l: 0.3 },    // قهوه‌ای
+                { h: 0, s: 0, l: 0.5 },       // خاکستری
+                { h: 0, s: 0, l: 0.9 },       // سفید
+                { h: 180, s: 0.6, l: 0.5 },   // فیروزه‌ای
+                { h: 240, s: 0.6, l: 0.4 },   // نیلی
+                { h: 25, s: 0.7, l: 0.4 },    // مسی
+                { h: 45, s: 0.9, l: 0.6 },    // طلایی
+                { h: 0, s: 0, l: 0.7 },       // نقره‌ای
+                { h: 0, s: 0.05, l: 0.85 },   // مرواریدی
+                { h: 290, s: 0.5, l: 0.7 },   // یاسی
+                { h: 300, s: 0.4, l: 0.3 },   // ارغوانی
+                { h: 220, s: 0.4, l: 0.2 },   // سرمه‌ای
+                { h: 90, s: 0.3, l: 0.3 },    // زیتونی
+            ];
+
+            for (let i = 0; i < 100; i++) {
+                const idx = i % patterns.length;
+                const p = patterns[idx];
+                // تنوع در روشنایی و اشباع
+                const sVariation = (Math.random() - 0.5) * 0.3;
+                const lVariation = (Math.random() - 0.5) * 0.3;
+                const s = Math.max(0.1, Math.min(1, p.s + sVariation));
+                const l = Math.max(0.05, Math.min(0.95, p.l + lVariation));
+                const h = p.h + (Math.random() - 0.5) * 20;
+
+                const rgb = hslToRgb(h / 360, s, l);
+                const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+                const nameIdx = i % names.length;
+                let name = names[nameIdx];
+                if (i < 20) name = names[i];
+
+                colors.push({
+                    id: i + 1,
+                    name: name,
+                    hex: hex,
+                    rgb: rgb,
+                    hsl: { h, s, l },
+                    category: getCategory(h)
+                });
+            }
+            return colors;
+        }
+
+        function hslToRgb(h, s, l) {
+            let r, g, b;
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0').toUpperCase()).join('');
+        }
+
+        function getCategory(h) {
+            if (h < 15 || h >= 345) return 'red';
+            if (h < 45) return 'orange';
+            if (h < 75) return 'yellow';
+            if (h < 165) return 'green';
+            if (h < 255) return 'blue';
+            if (h < 315) return 'purple';
+            return 'pink';
+        }
+
+        // ====== DOM ======
+        const colors = generateColors();
+        const grid = document.getElementById('colorGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterSelect = document.getElementById('filterSelect');
+        const selectedPreview = document.getElementById('selectedPreview');
+        const selectedNumber = document.getElementById('selectedNumber');
+        const selectedName = document.getElementById('selectedName');
+        const selectedHex = document.getElementById('selectedHex');
+        const copyBtn = document.getElementById('copyBtn');
+
+        let selectedColor = colors[0];
+
+        function renderColors(filtered) {
+            grid.innerHTML = filtered.map(c => `
+                <div class="color-item" style="background:${c.hex}; color:${isDark(c.rgb) ? '#fff' : '#000'};" 
+                     onclick="selectColor(${c.id})" data-id="${c.id}">
+                    <span class="num">${c.id}</span>
+                    <span class="name">${c.name}</span>
+                    <span class="hex-code">${c.hex}</span>
+                    <span class="copy-badge">📋</span>
+                </div>
+            `).join('');
+        }
+
+        function isDark(rgb) {
+            return (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) < 150;
+        }
+
+        function filterColors() {
+            const query = searchInput.value.trim().toLowerCase();
+            const category = filterSelect.value;
+
+            let filtered = colors;
+
+            if (query) {
+                filtered = filtered.filter(c =>
+                    c.name.includes(query) ||
+                    c.hex.toLowerCase().includes(query) ||
+                    c.id.toString().includes(query)
+                );
+            }
+
+            if (category !== 'all') {
+                filtered = filtered.filter(c => c.category === category);
+            }
+
+            renderColors(filtered);
+        }
+
+        function selectColor(id) {
+            const c = colors.find(col => col.id === id);
+            if (!c) return;
+            selectedColor = c;
+            selectedPreview.style.background = c.hex;
+            selectedNumber.textContent = `#${c.id}`;
+            selectedName.textContent = c.name;
+            selectedHex.textContent = c.hex;
+
+            document.querySelectorAll('.color-item').forEach(el => {
+                el.classList.toggle('selected', parseInt(el.dataset.id) === id);
+            });
+
+            copyBtn.textContent = '📋 کپی هگز';
+            copyBtn.classList.remove('copied');
+        }
+
+        // کپی
+        copyBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(selectedColor.hex).then(() => {
+                this.textContent = '✅ کپی شد!';
+                this.classList.add('copied');
+                setTimeout(() => {
+                    this.textContent = '📋 کپی هگز';
+                    this.classList.remove('copied');
+                }, 1500);
+            });
+        });
+
+        // رویدادها
+        searchInput.addEventListener('input', filterColors);
+        filterSelect.addEventListener('change', filterColors);
+
+        // ====== شروع ======
+        renderColors(colors);
+        selectColor(1);
+    </script>
+
+</body>
+</html>
